@@ -1,3 +1,4 @@
+#This module define the routes of the application
 from railway import app
 from flask import render_template
 
