@@ -3,5 +3,36 @@
 Add Trains
 {% endblock %}
 {% block content %}
-    <h1> This is the page for adding trains </h1>
+    
+<body class= "text-center">
+    <div class = "container">
+        <form method = "POST" class= "form-register" style= "color:white">
+            {{form.hidden_tag()}}
+            <h1 class="h3 mb-3 font-weight-normal">
+                Add Train!
+            </h1>
+            <br>
+            {{form.train_name.label()}}
+            {{form.train_name(class = "form-control",placeholder = "Train Name")}}
+            {{form.train_number.label()}}
+            {{form.train_number(class = "form-control",placeholder = "Train Number")}}
+            {{form.starting_date.label()}}
+            {{form.starting_date(class = "form-control",placeholder = "Journey Start Date")}}
+            {{form.starting_time.label()}}
+            {{form.starting_time(class ="form-control",placeholder="Journey End Time")}}
+            {{form.ending_date.label()}}
+            {{form.ending_date(class = "form-control",placeholder = "Journey End Date")}}
+            {{form.ending_time.label()}}
+            {{form.ending_time(class ="form-control",placeholder="Journey End Time")}}
+            {{form.number_of_compartments.label()}}
+            {{form.number_of_compartments(class ="form-control",placeholder="Number of compartments")}}
+            {{form.compartment_size.label()}}
+            {{form.compartment_size(class ="form-control",placeholder="Compartment Size")}}
+            {{form.ticket_price.label()}}
+            {{form.ticket_price(class ="form-control",placeholder="Ticket Price")}}
+            <br>
+            {{ form.submit(class="btn btn-lg btn-block btn-primary") }}
+        </form>
+    </div>
+</body>
 {% endblock %}
