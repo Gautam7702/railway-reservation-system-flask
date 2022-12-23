@@ -1,15 +1,27 @@
 #This module define the routes of the application
 from railway import app
-from flask import render_template,request,flash
-from railway.forms import add_train
+from flask import render_template,request,flash,redirect
+from railway.forms import add_train,search_train
 from railway.models import *
 @app.route('/')
 def home_page():
     return render_template('home.html')
 
-@app.route('/book-tickets',methods = ['GET','POST'])
-def book_tickets_page():
-    return render_template('book_tickets.html')
+@app.route('/search-tickets',methods = ['GET','POST'])
+def search_tickets_page():
+    if request.method == "POST":
+        return redirect('/book-tickets/' + request.form.get("train_id"))
+    form = search_train()
+    train_name = request.args.get('train_name')
+    train_number = request.args.get('train_number')
+    train_date = request.args.get('date')
+    search_result = Train.search(train_name,train_number,train_date)
+    return render_template('search_tickets.html',form=form,search_result = search_result)
+
+@app.route('/book-tickets/<train_id>',methods = ['GET','POST'])
+def book_tickets_page(train_id):
+    return train_id
+
 
 @app.route('/add_train',methods = ['GET','POST'])
 def add_train_page():
@@ -28,9 +40,7 @@ def add_train_page():
                 ticket_price = form.ticket_price.data,
                 left_seats = form.compartment_size.data*form.number_of_compartments.data
             )
-            # new_train.add(new_train)
-            db.session.add(new_train)
-            db.session.commit()
+            new_train.add()
             flash(f'Train {form.train_name.data} running on {form.starting_date.data} has been successfully added!',category = 'sucess')
         if form.errors != {}: #If there are not errors from the validations
             for err_msg in form.errors.values():

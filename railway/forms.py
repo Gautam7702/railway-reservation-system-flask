@@ -36,3 +36,16 @@ class add_train(FlaskForm):
     ticket_price = IntegerField(label = 'Ticket price',validators=[DataRequired()])
     submit = SubmitField(label ='Add Train')
 
+
+class search_train(FlaskForm):
+    def validate_date(self,given_date):
+        today_date = datetime.now().date()
+        if given_date.data < today_date:
+            raise ValidationError(f'Train {given_date.label.text} is invalid')
+
+    train_number = IntegerField(label = 'Train Number',validators=[NumberRange(min=1,max=10000)])
+    train_name = StringField(label = 'Train Name',validators=[])
+    date = DateField(label='Journey Start date ',validators=[])
+    submit = SubmitField(label ='Search Train')
+     
+

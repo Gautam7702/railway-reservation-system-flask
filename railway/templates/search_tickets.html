@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title%} 
+Book tickets
+{% endblock %}
+{% block content %}
+    <h1> Search for the train. </h1>
+    <div class = "container">
+        <form action = '/search-tickets' method ="GET" class = "form-register" style ="color:white;">
+            {{form.hidden_tag()}}
+            {{form.train_name.label()}}
+            {{form.train_name(class = "form-control",placeholder = "Train Name")}}
+            {{form.train_number.label()}}
+            {{form.train_number(class = "form-control",placeholder = "Train Number")}}
+            {{form.date.label()}}
+            {{form.date(class = "form-control",placeholder = "Journey Start Date")}}
+            <br>
+            {{ form.submit(class="btn btn-lg btn-block btn-primary") }}
+        </form>
+    </div>
+    <br>
+    
+    <div class ="container">
+        {% for train in search_result %}
+        <div class ="card mb-4 box-shadow text-center" style ="font-size: 10px; color: black;">
+            <p>train_name: {{train.train_name}} </p>
+            <p>train_number: {{train.train_number}} </p>
+            <p>starting date :{{train.starting_date}} starting time :{{train.starting_time}}   </p>
+            <p>starting date :{{train.ending_date}} starting time :{{train.ending_time}}   </p>
+            <p>Left seats : {{train.left_seats}} </p>
+            <p>Ticket price : {{train.ticket_price}}</p>
+            <form method = "POST">
+                <input type = "hidden" name = "train_id" value = "{{train.id}} " >
+                <input type="submit" value="BOOK" class ="btn btn-lg btn-block btn-primary">
+            </form>
+        {% endfor %}
+        </div>
+    </div>
+    
+
+{% endblock %}

@@ -14,10 +14,25 @@ class Train(db.Model):
     ticket_price = db.Column(db.Integer,nullable= False)
     booked_seats = db.relationship('Booked_seat',backref = 'train',lazy=True)
     unbooked_seats = db.relationship('Unbooked_seat',backref = 'train',lazy=True) 
-    def add(self,new_train):
-        db.session.add(new_train)
+    def add(self):
+        db.session.add()
         db.session.commit()
-        print("Data commited! ")
+    
+    def search(t_name,t_no,date):
+        search_trains = []
+        trains = Train.query.all()
+        for trn in trains:
+            if t_name:
+                if trn.train_name!=t_name:
+                    continue
+            if t_no:
+                if trn.train_number!=int(t_no):
+                    continue
+            if date:
+                if trn.starting_date.strftime('%Y-%m-%d')!=date:
+                    continue
+            search_trains.append(trn)
+        return search_trains
     def __repr__(self):
         return f"{self.id} {self.train_name} {self.train_number} {self.starting_date} {self.starting_time} {self.ending_date} {self.ending_time}"
 
