@@ -20,7 +20,26 @@ def search_tickets_page():
 
 @app.route('/book-tickets/<train_id>',methods = ['GET','POST'])
 def book_tickets_page(train_id):
-    return train_id
+    train = Train.query.get(train_id)
+    if request.method == 'GET':
+        seats_to_book = request.args.get('seats_to_book')
+        if seats_to_book:
+            if int(seats_to_book) > train.left_seats:
+                flash(f'Not enough seats available. Seats left = {train.left_seats}',category="danger")
+                return render_template("book_tickets.html",train = train,seats_to_book=0)
+            else:
+                return render_template("book_tickets.html",train=train,seats_to_book = int(seats_to_book))
+    if request.method == 'POST':
+        # print(request.__dict__)
+        print(request.form.__dict__)
+        seats_to_book = request.args.get('seats_to_book')
+        for i in range(int(seats_to_book)):
+            name = request.form.get("name_"+str(i))
+            age = request.form.get("age_"+str(i))
+            gender = request.form.get("gender_" + str(i))
+            print(f"name = {name} , age = {age} , gender = {gender}")
+
+    return render_template("book_tickets.html",train = train,seats_to_book = 0)
 
 
 @app.route('/add_train',methods = ['GET','POST'])

@@ -15,7 +15,16 @@ class Train(db.Model):
     booked_seats = db.relationship('Booked_seat',backref = 'train',lazy=True)
     unbooked_seats = db.relationship('Unbooked_seat',backref = 'train',lazy=True) 
     def add(self):
-        db.session.add()
+        db.session.add(self)
+        db.session.commit()
+        for i in range(self.number_of_compartments):
+            for j in range(self.compartment_size):
+                new_seat = Unbooked_seat(
+                    train_id = self.id,
+                    compartment_no = i+1,
+                    seat_no = j+1
+                )
+                db.session.add(new_seat)
         db.session.commit()
     
     def search(t_name,t_no,date):

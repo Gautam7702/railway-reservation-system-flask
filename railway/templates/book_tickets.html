@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title%} 
+Home Page 
+{% endblock %}
+{% block content %}
+<div class ="container">
+    <div class ="card mb-4 box-shadow text-center" style ="font-size: 10px; color: black;">
+        <p>train_name: {{train.train_name}} </p>
+        <p>train_number: {{train.train_number}} </p>
+        <p>starting date :{{train.starting_date}} starting time :{{train.starting_time}}   </p>
+        <p>starting date :{{train.ending_date}} starting time :{{train.ending_time}}   </p>
+        <p>Left seats : {{train.left_seats}} </p>
+        <p>Ticket price : {{train.ticket_price}}</p>
+        <div class = "container">
+            <form method = "GET">
+                <input type = "number" max="{train.left_seats}" min = 1 placeholder="Enter number of seats to book" name = "seats_to_book" class ="form-control" value = {{seats_to_book}}>
+            </form>
+        </div>
+        <br>
+        <hr>
+        <div class ="container">
+            <form method="POST" id = "passenger_data">
+                <input id="csrf_token" name="csrf_token" type="hidden" value="Ijg2MWJiMjAwMzQ2M2FlNmJlYjkzMmMyMmNmYTIyNWEwNmE3NjQwNzci.Y7FEoA.lUfeUsYShZwtjehvndykJVtq6Hs">
+            {% for i in range(seats_to_book) %}
+                <input type = "text" placeholder="Enter name" class = "form-control" name = "name_{{i}}" id = "name_{{i}}" value>
+                <input type = "number" placeholder="Enter age" class ="form-control" name = "age_{{i}}" min = 0 max = 130>
+                <input type="radio" name="gender_{{i}}" value="male"> Male
+                <input type="radio" name="gender_{{i}}" value="female"> Female
+            {% endfor %}   
+            <button type = "button" value="Book Tickets" class = "btn btn-lg btn-block btn-primary" data-toggle="modal" data-target="#buy-ticket">    
+            </button>
+            </form>
+            {% include 'includes/buy_ticket_modal.html' %}
+        
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    var form = document.getElementById("passenger_data");
+    document.getElementById("confirm_ticket").addEventListener("click", function () {
+      form.submit();
+    });
+</script>
+{% endblock %}
