@@ -1,8 +1,9 @@
 #This module define the routes of the application
 from railway import app
-from flask import render_template,request,flash,redirect
-from railway.forms import add_train,search_train
+from flask import render_template,request,flash,redirect,url_for
+from railway.forms import add_train,search_train,RegisterForm,LoginForm
 from railway.models import *
+from flask_login import login_user,current_user,logout_user
 @app.route('/')
 def home_page():
     return render_template('home.html')
@@ -65,5 +66,40 @@ def add_train_page():
             for err_msg in form.errors.values():
                 flash(err_msg, category='danger')
         return render_template('add_train.html',form=form)
-        
     return render_template('add_train.html',form=form)
+
+@app.route('/login',methods=['GET','POST'])
+def login_page():
+    form = LoginForm()
+    if form.validate_on_submit():
+        attempted_user = User.query.filter_by(username = form.username.data).first()
+        if attempted_user and attempted_user.check_password(form.password.data):
+            login_user(attempted_user)
+            flash(f'You are succesfully logged in as {attempted_user.username}')
+            return redirect(url_for('search_tickets_page'))
+        else:
+            flash('User and password does not match',category="danger") 
+    return render_template('login.html',form = form)
+
+@app.route('/register',methods = ['POST','GET'])
+def register_page():
+    form = RegisterForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            new_user = User(
+                username = form.username.data,
+                password = form.password1.data,
+                email_address = form.email_address.data
+            )
+            new_user.add()
+            login_user(new_user)
+            flash(f'Account created succesfully! You are logged in as {current_user.username}')
+        return redirect(url_for('search_tickets_page'))
+
+    return render_template('register.html',form = form)
+
+@app.route('/logout')
+def logout_page():
+    logout_user()
+    flash("You have been logged out!", category='info')
+    return redirect(url_for("home_page"))

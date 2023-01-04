@@ -1,5 +1,10 @@
 #this module defines the tables(models) for the database
-from railway import db
+from railway import db,bcrypt,login_manager
+from flask_login import UserMixin
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 class Train(db.Model):
     id = db.Column(db.Integer,primary_key = True)
     train_name = db.Column(db.String)
@@ -71,12 +76,28 @@ class Booked_ticket(db.Model):
     booked_by_user = db.Column(db.Integer,db.ForeignKey('user.id'))  # foreign key
     status = db.Column(db.String)
 
-class User(db.Model):
+class User(db.Model,UserMixin):
     id = db.Column(db.Integer,primary_key =True)
     username = db.Column(db.String)
     hash_password = db.Column(db.String)
-    email_id = db.Column(db.String)
-    budget = db.Column(db.Integer)
+    email_address = db.Column(db.String)
+    budget = db.Column(db.Integer,default = 1500)
     booked_tickets = db.relationship('Booked_ticket',backref='user',lazy=True)
+    # properties for password
+    def get_password(self):
+        return self.hash_password
+
+    def set_password(self,password):
+        self.hash_password = bcrypt.generate_password_hash(password)
+        return self.hash_password
+    password = property(get_password,set_password)
+
+    def check_password(self,attempted_password):
+        return bcrypt.check_password_hash(self.hash_password,attempted_password)
+
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
+
 
 #To-do : After testing is done, code nullable,Unique and lenght properties according to the business logic 
