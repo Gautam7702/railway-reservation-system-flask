@@ -53,7 +53,7 @@ class Train(db.Model):
     #lazy = True : enforces that the select query is executed when the property is first accessed
 class Passenger(db.Model):
     id = db.Column(db.Integer,primary_key=True)
-    ticket_id = db.Column(db.Integer)
+    ticket_id = db.Column(db.Integer,db.ForeignKey('booked_tickets.id'))
     name = db.Column(db.String)
     age = db.Column(db.Integer)
     gender = db.Column(db.String(length =1))
@@ -91,6 +91,7 @@ class Booked_ticket(db.Model):
     id = db.Column(db.Integer,primary_key = True)
     booked_by_user = db.Column(db.Integer,db.ForeignKey('user.id'))  # foreign key
     status = db.Column(db.String)
+    passengers = db.relationship('Passenger',backref = 'ticket',lazy = True)
     def add(self):
         db.session.add(self)
         db.session.commit()
@@ -112,7 +113,7 @@ class User(db.Model,UserMixin):
 
     def check_password(self,attempted_password):
         return bcrypt.check_password_hash(self.hash_password,attempted_password)
-        
+
     def add(self):
         db.session.add(self)
         db.session.commit()
