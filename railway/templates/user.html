@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title%} 
+User info
+{% endblock %}
+{% block content %}
+<center>
+<div class="card text-center" style="width: 18rem; margin-top:10px">
+    <img src="https://media.istockphoto.com/id/902074342/vector/vector-cartoon-evil-wizard-or-bad-magician-icon.jpg?s=612x612&w=0&k=20&c=cORidBJxvEElC__gzEu-W9q-K6XrpeY_yQSeEEg4gBo=" class="card-img-top" alt="...">
+    <div class="card-body text-dark">
+      <h5 class="card-title">{{current_user.username}}</h5>
+      <p class="card-text">{{current_user.email_address}}</p>
+      <p class="card-text">Budget : {{current_user.budget}}</p>
+      <a href = '/search-tickets' class="btn btn-primary">Book Tickets </a>
+    </div>
+</div>
+</center>
+<hr>
+
+<h1 class="display-3 text-center">Booked Tickets</h1>
+<br>
+<div class = "container">
+{% for ticket in current_user.booked_tickets %}
+<div class="card text-center text-dark" style="margin:10px; margin-bottom: 40px;padding:20px;">
+      <h5 class="card-title">Ticket no: {{ticket.id}}</h5>
+      <p class ="card-text">Train no: {{ticket.passengers[0].seat[0].train.train_number}} Train Name: {{ticket.passengers[0].seat[0].train.train_name}}</p>
+      <div class ="row bg-danger">
+        <div class ="col">Name </div>
+        <div class ="col">Age </div>
+        <div class ="col">Gender </div>
+        <div class ="col">Compartment_no</div>
+        <div class ="col">Seat_no</div>
+      </div>
+    {% for passenger in  ticket.passengers %}
+    <div class ="row" style = "background-color:lavender">
+        <div class ="col">{{passenger.name}} </div>
+        <div class ="col">{{passenger.age}} </div>
+        <div class ="col">{{passenger.gender}} </div>
+        <div class ="col">{{passenger.seat[0].compartment_no}}</div>
+        <div class ="col">{{passenger.seat[0].seat_no}}</div>
+      </div>
+    {% endfor %}
+    <br>
+    <center>
+    <form method ='POST' action = "/delete">
+    <input type="hidden" value ="{{ticket.id}}" name ="ticket_id">
+    <button type="submit" class="btn-sm bg-danger bg-gradient" style = "width: 18rem">Cancel Ticket</button>
+    </form>
+    </center>
+</div> 
+{% endfor %}
+</div>
+{% endblock %}

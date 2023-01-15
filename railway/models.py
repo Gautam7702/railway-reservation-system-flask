@@ -53,13 +53,16 @@ class Train(db.Model):
     #lazy = True : enforces that the select query is executed when the property is first accessed
 class Passenger(db.Model):
     id = db.Column(db.Integer,primary_key=True)
-    ticket_id = db.Column(db.Integer,db.ForeignKey('booked_tickets.id'))
+    ticket_id = db.Column(db.Integer,db.ForeignKey('booked_ticket.id'))
     name = db.Column(db.String)
     age = db.Column(db.Integer)
     gender = db.Column(db.String(length =1))
     seat = db.relationship('Booked_seat',backref = 'passenger',lazy = True)
     def add(self):
         db.session.add(self)
+        db.session.commit()
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()
 
 class Booked_seat(db.Model):
@@ -69,6 +72,15 @@ class Booked_seat(db.Model):
     passenger_id = db.Column(db.Integer,db.ForeignKey('passenger.id')) #foreign key to Passenger
     def add(self):
         db.session.add(self)
+        db.session.commit()
+    def delete(self):
+        db.session.delete(self)
+        unbooked_seat = Unbooked_seat(
+            train_id = self.train_id,
+            compartment_no = self.compartment_no,
+            seat_no = self.seat_no
+        )
+        db.session.add(unbooked_seat)
         db.session.commit()
 
 class Unbooked_seat(db.Model):
@@ -94,6 +106,9 @@ class Booked_ticket(db.Model):
     passengers = db.relationship('Passenger',backref = 'ticket',lazy = True)
     def add(self):
         db.session.add(self)
+        db.session.commit()
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()
 class User(db.Model,UserMixin):
     id = db.Column(db.Integer,primary_key =True)

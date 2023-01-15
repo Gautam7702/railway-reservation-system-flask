@@ -56,8 +56,8 @@ def book_tickets_page(train_id):
             )
             new_passenger.add()
             possible_seats[i].book(new_passenger)
-            flash(f'User has sucessfully booked the ticket')
-            return redirect('/search-tickets')
+        flash(f'User has sucessfully booked the ticket')
+        return redirect(url_for('user_page'))
             
     return render_template("book_tickets.html",train = train,seats_to_book = 0)
 
@@ -122,3 +122,25 @@ def logout_page():
     logout_user()
     flash("You have been logged out!", category='info')
     return redirect(url_for("home_page"))
+
+@app.route('/user')
+def user_page():
+    return render_template('user.html')
+
+@app.route('/delete',methods = ['POST','GET'])
+def delete_ticket():    
+    ticket_id = request.form['ticket_id']
+    
+    ticket =  Booked_ticket.query.filter_by(id = ticket_id).first()
+    passengers = ticket.passengers
+    num_of_seats = len(passengers)
+    cost = passengers[0].seat[0].train.ticket_price
+    total_cost = cost*num_of_seats
+    current_user.budget += total_cost
+    for passenger in passengers:
+        seat = passenger.seat[0]
+        seat.delete()
+        passenger.delete()
+    ticket.delete()
+
+    return redirect(url_for('user_page'))
