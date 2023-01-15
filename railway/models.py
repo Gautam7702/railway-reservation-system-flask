@@ -58,24 +58,42 @@ class Passenger(db.Model):
     age = db.Column(db.Integer)
     gender = db.Column(db.String(length =1))
     seat = db.relationship('Booked_seat',backref = 'passenger',lazy = True)
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
 
 class Booked_seat(db.Model):
     train_id = db.Column(db.Integer,db.ForeignKey('train.id'),primary_key = True) #foreign key to Train
     compartment_no = db.Column(db.Integer,primary_key = True)
     seat_no = db.Column(db.Integer,primary_key =True) 
     passenger_id = db.Column(db.Integer,db.ForeignKey('passenger.id')) #foreign key to Passenger
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
 
 class Unbooked_seat(db.Model):
     train_id = db.Column(db.Integer,db.ForeignKey('train.id'),primary_key = True) #foreign key to Train
     compartment_no = db.Column(db.Integer,primary_key = True)
-    seat_no = db.Column(db.Integer,primary_key =True) 
+    seat_no = db.Column(db.Integer,primary_key =True)
+    def book(self,new_passenger):
+        db.session.delete(self)
+        db.session.commit()
+        booked_seat = Booked_seat(
+            train_id = self.train_id,
+            compartment_no =self.compartment_no,
+            seat_no=self.seat_no,
+            passenger_id = new_passenger.id 
+        ) 
+        booked_seat.add()
 
 
 class Booked_ticket(db.Model):
     id = db.Column(db.Integer,primary_key = True)
     booked_by_user = db.Column(db.Integer,db.ForeignKey('user.id'))  # foreign key
     status = db.Column(db.String)
-
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
 class User(db.Model,UserMixin):
     id = db.Column(db.Integer,primary_key =True)
     username = db.Column(db.String)
@@ -94,7 +112,7 @@ class User(db.Model,UserMixin):
 
     def check_password(self,attempted_password):
         return bcrypt.check_password_hash(self.hash_password,attempted_password)
-
+        
     def add(self):
         db.session.add(self)
         db.session.commit()

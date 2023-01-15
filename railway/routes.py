@@ -3,7 +3,7 @@ from railway import app
 from flask import render_template,request,flash,redirect,url_for
 from railway.forms import add_train,search_train,RegisterForm,LoginForm
 from railway.models import *
-from flask_login import login_user,current_user,logout_user
+from flask_login import login_user,current_user,logout_user,login_required
 @app.route('/')
 def home_page():
     return render_template('home.html')
@@ -20,6 +20,7 @@ def search_tickets_page():
     return render_template('search_tickets.html',form=form,search_result = search_result)
 
 @app.route('/book-tickets/<train_id>',methods = ['GET','POST'])
+@login_required
 def book_tickets_page(train_id):
     train = Train.query.get(train_id)
     if request.method == 'GET':
@@ -31,15 +32,33 @@ def book_tickets_page(train_id):
             else:
                 return render_template("book_tickets.html",train=train,seats_to_book = int(seats_to_book))
     if request.method == 'POST':
-        # print(request.__dict__)
-        print(request.form.__dict__)
-        seats_to_book = request.args.get('seats_to_book')
-        for i in range(int(seats_to_book)):
+        seats_to_book = int(request.args.get('seats_to_book'))
+        if current_user.budget < seats_to_book*train.ticket_price:
+            flash(f'User does not have enough budget to buy the tickets',category="danger")
+            return render_template("book_tickets.html",train = train,seats_to_book = 0)
+        current_user.budget-= seats_to_book*train.ticket_price
+        train.left_seats-= seats_to_book
+        new_ticket = Booked_ticket(
+            status = "Confirmed",
+            booked_by_user = current_user.id
+        )
+        new_ticket.add()
+        possible_seats = train.unbooked_seats
+        for i in range(seats_to_book):
             name = request.form.get("name_"+str(i))
             age = request.form.get("age_"+str(i))
             gender = request.form.get("gender_" + str(i))
-            print(f"name = {name} , age = {age} , gender = {gender}")
-
+            new_passenger = Passenger(
+                ticket_id = new_ticket.id,
+                name=name,
+                age=age,
+                gender=gender
+            )
+            new_passenger.add()
+            possible_seats[i].book(new_passenger)
+            flash(f'User has sucessfully booked the ticket')
+            return redirect('/search-tickets')
+            
     return render_template("book_tickets.html",train = train,seats_to_book = 0)
 
 
