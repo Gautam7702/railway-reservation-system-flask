@@ -19,19 +19,33 @@ Book tickets
     </div>
     <br>
     
-    <div class ="container">
+    <!-- <div class ="container"> -->
+        <div class = "container">
         {% for train in search_result %}
-        <div class ="card mb-4 box-shadow text-center" style ="font-size: 10px; color: black;">
-            <p>train_name: {{train.train_name}} </p>
-            <p>train_number: {{train.train_number}} </p>
-            <p>starting date :{{train.starting_date}} starting time :{{train.starting_time}}   </p>
-            <p>starting date :{{train.ending_date}} starting time :{{train.ending_time}}   </p>
-            <p>Left seats : {{train.left_seats}} </p>
-            <p>Ticket price : {{train.ticket_price}}</p>
+        <div class ="card mb-4 box-shadow" style ="color: black;">
+            <div class ="row text-center">
+            <div class ="col bg-secondary">Train Name: </div> <div class ="col" style = "background-color: lightgrey;">{{train.train_name}} </div>
+            </div>
+            <div class = "row text-center" >
+            <div class ="col bg-secondary">Train Number: </div> <div class ="col" style = "background-color: lightgrey;">{{train.train_number}}</div>
+            </div>
+            <div class = "row text-center" >
+            <div class ="col bg-secondary">Starting date : {{train.starting_date}}</div> <div class ="col" style = "background-color: lightgrey;">Starting time : {{train.starting_time}}</div>
+            </div>
+            <div class = "row text-center" >
+            <div class ="col bg-secondary">Ending date : {{train.ending_date}}</div> <div class ="col" style = "background-color: lightgrey;">Ending time : {{train.ending_time}}</div>
+            </div>
+            <div class = "row text-center" >
+            <div class ="col bg-secondary">Left seats :</div> <div class ="col" style = "background-color: lightgrey;">{{train.left_seats}}</div>
+            </div>
+            <div class = "row text-center" >
+            <div class ="col bg-secondary">Ticket price : </div> <div class ="col" style = "background-color: lightgrey;">{{train.ticket_price}}</div>
+            </div>
             <form method = "POST">
                 <input type = "hidden" name = "train_id" value = "{{train.id}} " >
                 <input type="submit" value="BOOK" class ="btn btn-lg btn-block btn-primary">
             </form>
+        </div>
         {% endfor %}
         </div>
     </div>
